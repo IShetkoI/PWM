@@ -30,8 +30,8 @@
 
 
 /* Private variables --------------------------------------------------------*/
-volatile bool isIrq = false;        // Is the interruption caused by
-volatile uint32_t timeStartIrq = 0; // Interruption start time
+volatile bool isInterruptRequest = false;        // Is the interruption caused by
+volatile uint32_t timeStartInterruptRequest = 0; // Interruption start time
 extern TIM_HandleTypeDef Timer;
 
 uint32_t timeIrq = 0; // Duration of interruption
@@ -59,14 +59,14 @@ int main(void)
 
     /* Infinite loop */
     while (1) {
-        timeIrq = HAL_GetTick() - timeStartIrq; // Duration of interruption
+        timeIrq = HAL_GetTick() - timeStartInterruptRequest; // Duration of interruption
 
-        if (isIrq && (timeIrq > TRANSITION_TIME) ) {
+        if (isInterruptRequest && (timeIrq > TRANSITION_TIME) ) {
             __HAL_GPIO_EXTI_CLEAR_IT (pinButton);          // Clear the EXTI_PR bit
             NVIC_ClearPendingIRQ (EXTI15_10_IRQn);       // Clear the NVIC_ICPRx bit
             HAL_NVIC_EnableIRQ (EXTI15_10_IRQn);         // Enabling external interrupts
 
-            isIrq = false;
+            isInterruptRequest = false;
         }
     }
 }
