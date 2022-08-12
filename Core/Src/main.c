@@ -54,8 +54,8 @@ int main(void)
     /* Initialize all configured peripherals */
     initializeGpio();
     initializeTimer();
-
-    if(startPwmTimer() != HAL_OK){
+    HAL_StatusTypeDef statusStartPwm = startPwmTimer();
+    if(statusStartPwm != HAL_OK){
         Error_Handler();
     }
 

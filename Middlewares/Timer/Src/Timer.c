@@ -51,9 +51,10 @@ void initializeTimer(void)
 /**
   * @brief TIM4 starting PWM mode
   * @param None
-  * @retval HAL_Status
+  * @retval statusStartPwm: PWM mode start status on the timer
   */
 HAL_StatusTypeDef startPwmTimer(void)
 {
-    return HAL_TIM_PWM_Start (&Timer, TIM_CHANNEL_2);
+	HAL_StatusTypeDef statusStartPwm = HAL_TIM_PWM_Start (&Timer, TIM_CHANNEL_2);
+    return statusStartPwm;
 }
