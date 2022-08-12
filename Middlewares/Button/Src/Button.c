@@ -50,7 +50,7 @@ void initializeGpio (void)
   */
 uint32_t computePercent()
 {
-	return Timer.Init.Period * DUTY_CYCLE_PERCENT / 100;
+    return Timer.Init.Period * DUTY_CYCLE_PERCENT / 100;
 }
 
 
