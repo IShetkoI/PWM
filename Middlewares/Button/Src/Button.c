@@ -9,8 +9,8 @@
 
 
 /* Variables --------------------------------------------------------------- */
-extern bool isIrq;
-extern uint32_t timeStartIrq;
+extern bool isInterruptRequest;
+extern uint32_t timeStartInterruptRequest;
 extern TIM_HandleTypeDef Timer;
 
 uint32_t dutyCycleUnits = 0;  // Duty cycle (DC) in units
@@ -64,8 +64,8 @@ void HAL_GPIO_EXTI_Callback (uint16_t GPIO_Pin)
     if (GPIO_Pin == pinButton) {                  // If button is pressed
         HAL_NVIC_DisableIRQ (EXTI15_10_IRQn);     // Disabling the interrupt
 
-        isIrq = true;
-        timeStartIrq = HAL_GetTick();
+        isInterruptRequest = true;
+        timeStartInterruptRequest = HAL_GetTick();
 
         dutyCycleUnits += computePercent();       // Increase DC
 
