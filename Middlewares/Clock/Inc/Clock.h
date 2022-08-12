@@ -1,2 +1,6 @@
-/* Configure the system clock */
-void SystemClock_Config(void);
+#ifndef CLOCK_H
+#define CLOCK_H
+
+void configSystemClock (void);
+
+#endif /* CLOCK_H: */
