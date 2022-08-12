@@ -54,7 +54,10 @@ int main(void)
     /* Initialize all configured peripherals */
     initializeGpio();
     initializeTimer();
-    startPwmTimer();
+
+    if(startPwmTimer() != HAL_OK){
+        Error_Handler();
+    }
 
 
     /* Infinite loop */

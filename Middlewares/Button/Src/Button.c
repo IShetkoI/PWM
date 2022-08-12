@@ -48,7 +48,7 @@ void initializeGpio (void)
   * @param None
   * @retval Calculated percent of period
   */
-uint32_t computePercent()
+uint32_t computePercent(void)
 {
     return Timer.Init.Period * DUTY_CYCLE_PERCENT / 100;
 }

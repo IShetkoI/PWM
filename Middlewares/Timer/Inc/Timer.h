@@ -3,6 +3,6 @@
 
 void initializeTimer(void);
 
-void startPwmTimer();
+HAL_StatusTypeDef startPwmTimer(void);
 
 #endif /* TIMER_H */
