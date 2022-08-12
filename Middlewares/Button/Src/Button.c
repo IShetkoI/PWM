@@ -5,15 +5,15 @@
 
 
 /* Defines ------------------------------------------------------------------*/
-#define TRANSITION_TIME 10 // Время окончания переходного процесса
+#define DUTY_CYCLE_PERCENT 10 // Duty cycle (DC) in percent
 
 
 /* Variables --------------------------------------------------------------- */
 extern bool isIrq;
-extern uint32_t timeIrq;
-extern TIM_HandleTypeDef htim4;
+extern uint32_t timeStartIrq;
+extern TIM_HandleTypeDef Timer;
 
-uint32_t pwmValue = 0; // Значение коэффициента заполнения
+uint32_t dutyCycleUnits = 0;  // Duty cycle (DC) in units
 
 
 /* Functions --------------------------------------------------------------- */
@@ -22,7 +22,8 @@ uint32_t pwmValue = 0; // Значение коэффициента заполн
   * @param None
   * @retval None
   */
-void MX_GPIO_Init(void) {
+void initializeGpio (void)
+{
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
     /* GPIO Ports Clock Enable */
@@ -31,32 +32,47 @@ void MX_GPIO_Init(void) {
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
     /*Configure GPIO pin : BTN_Pin */
-    GPIO_InitStruct.Pin = BTN_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+    GPIO_InitStruct.Pin = pinButton;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(BTN_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init (BTN_GPIO_Port, &GPIO_InitStruct);
 
     /* EXTI interrupt init*/
-    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+    HAL_NVIC_SetPriority (EXTI15_10_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ (EXTI15_10_IRQn);
 }
 
 
 /**
-  * @brief GPIO Initialization Function
+  * @brief Calculation of percent of period
+  * @param None
+  * @retval Calculated percent of period
+  */
+uint32_t computePercent()
+{
+	return Timer.Init.Period * DUTY_CYCLE_PERCENT / 100;
+}
+
+
+/**
+  * @brief Pass the new DC value to the timer register
   * @param GPIO_Pin: Pin number on the board
   * @retval None
   */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    if (GPIO_Pin == BTN_Pin) { // Если нажали кнопку
-        HAL_NVIC_DisableIRQ(EXTI15_10_IRQn); // Отключаем прерывание
-        isIrq = true;
-        timeIrq = HAL_GetTick();
+void HAL_GPIO_EXTI_Callback (uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == pinButton) {                  // If button is pressed
+        HAL_NVIC_DisableIRQ (EXTI15_10_IRQn);     // Disabling the interrupt
 
-        pwmValue += htim4.Init.Period / 10; // Добавляем 10% к яркости
-        if (pwmValue >= htim4.Init.Period) {
-            pwmValue = 0; // Если уже больше 100%, то начинаем заново
+        isIrq = true;
+        timeStartIrq = HAL_GetTick();
+
+        dutyCycleUnits += computePercent();       // Increase DC
+
+        if (dutyCycleUnits > Timer.Init.Period) { // If full, release
+            dutyCycleUnits = 0;
         }
-        TIM4->CCR2 = pwmValue; // Записываем значение в регистр таймера
+
+        TIM4->CCR2 = dutyCycleUnits;              // Pass the new DC value to the timer register
     }
 }
