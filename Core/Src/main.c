@@ -37,7 +37,6 @@ volatile uint32_t timeIrq = 0; // Время начала прерывания
 
 
 /* Private user code ---------------------------------------------------------*/
-
 /**
   * @brief  The application entry point.
   * @retval int
