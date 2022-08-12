@@ -26,7 +26,7 @@
 
 
 /* Define -------------------------------------------------------------------*/
-#define TRANSITION_TIME 100          // Transient end time
+#define TRANSITION_TIME 200          // Transient end time
 
 
 /* Private variables --------------------------------------------------------*/
